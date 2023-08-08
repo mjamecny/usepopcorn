@@ -58,7 +58,7 @@ export default function App() {
   const [watched, setWatched] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = useState("inception")
   const [selectedId, setSelectedId] = useState(null)
 
   /*
@@ -342,6 +342,14 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       getMovieDetails()
     },
     [selectedId]
+  )
+
+  useEffect(
+    function () {
+      if (!title) return
+      document.title = `Movie | ${title}`
+    },
+    [title]
   )
 
   return (
