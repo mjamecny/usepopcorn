@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from "react"
-import StarRating from "./StarRating"
+
+//---HOOKS---//
 import { useMovies } from "./useMovies"
 import { useLocalStorageState } from "./useLocalStorageState"
+
+//---COMPONENTS---//
+import StarRating from "./StarRating"
+import { useKey } from "./useKey"
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0)
@@ -112,23 +117,11 @@ function NumResults({ movies }) {
 function Search({ query, setQuery }) {
   const inputEl = useRef(null)
 
-  useEffect(
-    function () {
-      function callback(e) {
-        if (document.activeElement === inputEl.current) return
-
-        if (e.code === "Enter") {
-          inputEl.current.focus()
-          setQuery("")
-        }
-      }
-
-      document.addEventListener("keydown", callback)
-
-      return () => document.removeEventListener("keydown", callback)
-    },
-    [setQuery]
-  )
+  useKey("Enter", function () {
+    if (document.activeElement === inputEl.current) return
+    inputEl.current.focus()
+    setQuery("")
+  })
 
   return (
     <input
@@ -264,39 +257,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     // setAvgRating((avgRating) => (avgRating + userRating) / 2)
   }
 
-  useEffect(
-    function () {
-      function callback(e) {
-        if (e.code === "Escape") {
-          onCloseMovie()
-        }
-      }
-
-      document.addEventListener("keydown", callback)
-
-      return function () {
-        document.removeEventListener("keydown", callback)
-      }
-    },
-    [onCloseMovie]
-  )
-
-  useEffect(
-    function () {
-      async function getMovieDetails() {
-        setIsLoading(true)
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
-        )
-        const data = await res.json()
-        setMovie(data)
-        setIsLoading(false)
-      }
-
-      getMovieDetails()
-    },
-    [selectedId]
-  )
+  useKey("Escape", onCloseMovie)
 
   useEffect(
     function () {
