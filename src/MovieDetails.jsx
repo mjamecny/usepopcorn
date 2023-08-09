@@ -5,6 +5,8 @@ import { useKey } from "./hooks/useKey"
 import Loader from "./Loader"
 import StarRating from "./StarRating"
 
+const KEY = "b2453ff5"
+
 export default function MovieDetails({
   selectedId,
   onCloseMovie,
@@ -61,6 +63,22 @@ export default function MovieDetails({
 
   useEffect(
     function () {
+      async function getMovieDetails() {
+        setIsLoading(true)
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+        )
+        const data = await res.json()
+        setMovie(data)
+        setIsLoading(false)
+      }
+      getMovieDetails()
+    },
+    [selectedId]
+  )
+
+  useEffect(
+    function () {
       if (!title) return
       document.title = `Movie | ${title}`
 
@@ -81,7 +99,7 @@ export default function MovieDetails({
             <button className="btn-back" onClick={onCloseMovie}>
               &larr;
             </button>
-            <img src={poster} alt={`Poster of ${movie} movie`} />
+            <img src={poster} alt={`Poster of ${title} movie`} />
             <div className="details-overview">
               <h2>{title}</h2>
               <p>
